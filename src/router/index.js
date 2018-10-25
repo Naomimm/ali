@@ -100,6 +100,33 @@ export const constantRouterMap = [
         meta: { title: 'guide', icon: 'guide', noCache: true }
       }
     ]
+  },
+  {
+    path: '/assets',
+    component: Layout,
+    redirect: '/assets/issuers',
+    meta: {title: '资产发行管理', icon: 'component', noCache: true},
+    children: [
+      {
+        path: 'index/:issuerId',
+        component: () => import('@/views/assets/assets'),
+        props: true,
+        name: 'assets',
+        meta: {title: '资产管理', icon: 'money', noCache: true}
+      },
+      {
+        path: 'issuers',
+        component: () => import('@/views/assets/issuers'),
+        name: 'issuers',
+        meta: {title: '发行人管理', icon: 'peoples', noCache: true}
+      },
+      {
+        path: 'issuer-accounts',
+        component: () => import('@/views/assets/issuer_accounts'),
+        name: 'issuer-accounts',
+        meta: {title: '发行人账户管理', icon: 'tree', noCache: true}
+      }
+    ]
   }
 ]
 
