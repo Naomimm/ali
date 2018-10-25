@@ -37,9 +37,10 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="logo" >
+      <el-table-column width="200" align="center" label="logo" >
         <template slot-scope="scope">
-          <span>{{ scope.row.logo.String }}</span>
+          <!--<span>{{ scope.row.logo.String }}</span>-->
+          <img :src="scope.row.logo.String" />
         </template>
       </el-table-column>
 
@@ -89,8 +90,9 @@
         <el-form-item label="发行总量" prop="amount">
           <el-input v-model.number="temp.amount"/>
         </el-form-item>
-        <el-form-item label="LOGO" prop="logo">
-          <el-input v-model="temp.logo.String"/>
+        <el-form-item label="LOGO" prop="img">
+          <!--<el-input v-model="temp.logo.String"/>-->
+          <img-preivew :img-data.sync="temp.logo.String" />
         </el-form-item>
         <el-form-item label="备注" prop="comment">
           <el-input v-model="temp.comment"/>
@@ -138,11 +140,15 @@
     import { getIssuerAccountList, createIssuerAccount } from '@/api/issuer_accounts'
     import * as Stellar from '@/utils/horizon'
     import waves from '@/directive/waves' // 水波纹指令
+    import imgPreivew from '@/components/ImagePreview'
 
     export default {
       name: "assets",
       directives: {
         waves
+      },
+      components:{
+        'img-preivew': imgPreivew
       },
       props: ['issuerId'],
       data: function () {
@@ -166,7 +172,7 @@
             security_level: 1,
             comment: '',
             sort: 0,
-            protocol: ''
+            protocol: '',
           },
           dialogFormVisible: false,
           dialogStatus: '',
@@ -193,7 +199,7 @@
             distributor_address: '',
             distributor_seed: '',
             distributor_mnemonic: '',
-          }
+          },
         }
       },
       mounted: function () {
@@ -248,7 +254,8 @@
             security_level: 1,
             comment: '',
             sort: 0,
-            protocol: ''
+            protocol: '',
+            img: ''
           }
         },
         handleCreate() {
@@ -257,7 +264,7 @@
           this.dialogFormVisible = true
         },
         handleUpdate(row) {
-          this.temp = Object.assign({}, row) // copy obj
+          this.temp = Object.assign(this.temp, row) // copy obj
 
           this.dialogStatus = 'update'
           this.dialogFormVisible = true
