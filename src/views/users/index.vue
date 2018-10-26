@@ -58,9 +58,10 @@
 
       <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">{{ $t('table.delete') }}</el-button>
+          <!--<el-button size="mini" type="danger" @click="handleDelete(scope.row)">{{ $t('table.delete') }}</el-button>-->
           <el-button size="mini" type="default" @click="handleUserAssets(scope.row)">资产</el-button>
           <el-button size="mini" type="warning" @click="handleSendWEC(scope.row)" style="">送WEC</el-button>
+          <el-button size="mini" type="warning" @click="handleSendCNY(scope.row)" style="">送CNY</el-button>
         </template>
       </el-table-column>
 
@@ -227,7 +228,37 @@
           }
         }
       },
-      async handleSendWEC(row){
+      async handleSendCNY(row){
+        let w = await this.getUserWallet(row.id)
+        console.log('getUserWallet:', w)
+        this.$prompt('请输入要发送的CNY金额', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputPattern: /\d+/,
+          inputErrorMessage: 'CNY金额格式不正确'
+        }).then(async ({ value }) => {
+          // alert(value)
+          let resp = await Stellar.pay(
+            process.env.CNY_DISTRIBUTOR_ADDRESS,
+            process.env.CNY_DISTRIBUTOR_SEED,
+            w.address,
+            process.env.CNY_ASSET_CODE,
+            process.env.CNY_ASSET_ISSUER,
+            value
+          )
+          console.log("send CNY resp: ", resp)
+          this.$message({
+            type: 'success',
+            message: '成功发送CNY, 金额: ' + value
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '取消输入'
+          });
+        });
+      },
+      async handleSendWEC(userId, asset){
         let w = await this.getUserWallet(row.id)
         console.log('getUserWallet:', w)
         this.$prompt('请输入要发送的WEC金额', '提示', {
@@ -246,7 +277,7 @@
           console.log("send wec resp: ", resp)
           this.$message({
             type: 'success',
-            message: '成功发送的WEC金额: ' + value
+            message: '成功发送WEC, 金额: ' + value
           });
         }).catch(() => {
           this.$message({
