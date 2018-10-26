@@ -127,6 +127,21 @@ export const constantRouterMap = [
         meta: {title: '发行人账户管理', icon: 'tree', noCache: true}
       }
     ]
+  },
+  {
+    path: '/users',
+    component: Layout,
+    redirect: '/users/index',
+    meta: {title: '用户管理', icon: 'peoples', noCache: true},
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/users/index'),
+        props: true,
+        name: 'users',
+        meta: {title: '用户管理', icon: 'peoples', noCache: true}
+      },
+    ]
   }
 ]
 

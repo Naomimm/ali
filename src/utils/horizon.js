@@ -10,6 +10,11 @@ let txHandler = function (txResponse) {
   console.log( JSON.stringify(StellarSdk.xdr.TransactionMeta.fromXDR(txResponse.result_meta_xdr, 'base64')) );
 };
 
+export async function loadAccount(address) {
+  let account = await horizon.loadAccount(address)
+  return account
+}
+
 export async function createAccount(dstAddress) {
   let pub = process.env.MAIN_ADDRESS
   let prv = process.env.MAIN_SEED
