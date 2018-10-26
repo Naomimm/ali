@@ -72,3 +72,4 @@ export async function payNative(fromAddress, fromSeed, toAddress, amount) {
   transaction.sign(StellarSdk.Keypair.fromSecret(fromSeed)); // sign the transaction
   return horizon.submitTransaction(transaction);
 }
+
