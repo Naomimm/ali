@@ -137,9 +137,50 @@ export const constantRouterMap = [
       {
         path: 'index',
         component: () => import('@/views/users/index'),
+        props: true,
         name: 'users',
-        meta: {title: '用户管理', icon: 'peoples', noCache: true}
+        meta: { title: '用户管理', icon: 'peoples', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/acl',
+    component: Layout,
+    redirect: '/acl/accounts',
+    meta: { title: '系统权限管理', icon: 'tree', noCache: true },
+    children: [
+      {
+        path: 'accounts',
+        component: () => import('@/views/acl/accounts'),
+        name: 'accounts',
+        meta: { title: '后台账户管理', noCache: true }
       },
+      {
+        path: 'roles',
+        component: () => import('@/views/acl/roles'),
+        name: 'roles',
+        meta: { title: '角色列表', noCache: true }
+      },
+      {
+        path: 'permissions',
+        component: () => import('@/views/acl/permissions'),
+        name: 'permissions',
+        meta: { title: '权限列表', noCache: true }
+      },
+      {
+        path: 'set_roles/:accountId',
+        component: () => import('@/views/acl/set_roles'),
+        props: true,
+        name: 'set_roles',
+        meta: { title: '设置角色', noCache: true }
+      },
+      {
+        path: 'set_permissions/:roleId',
+        component: () => import('@/views/acl/set_permissions'),
+        props: true,
+        name: 'set_permissions',
+        meta: { title: '设置权限', noCache: true }
+      }
     ]
   },
   {
