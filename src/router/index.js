@@ -105,26 +105,26 @@ export const constantRouterMap = [
     path: '/assets',
     component: Layout,
     redirect: '/assets/issuers',
-    meta: {title: '资产发行管理', icon: 'component', noCache: true},
+    meta: { title: '资产发行管理', icon: 'component', noCache: true },
     children: [
       {
         path: 'index/:issuerId',
         component: () => import('@/views/assets/assets'),
         props: true,
         name: 'assets',
-        meta: {title: '资产管理', icon: 'money', noCache: true}
+        meta: { title: '资产管理', icon: 'money', noCache: true }
       },
       {
         path: 'issuers',
         component: () => import('@/views/assets/issuers'),
         name: 'issuers',
-        meta: {title: '发行人管理', icon: 'peoples', noCache: true}
+        meta: { title: '发行人管理', icon: 'peoples', noCache: true }
       },
       {
         path: 'issuer-accounts',
         component: () => import('@/views/assets/issuer_accounts'),
         name: 'issuer-accounts',
-        meta: {title: '发行人账户管理', icon: 'tree', noCache: true}
+        meta: { title: '发行人账户管理', icon: 'tree', noCache: true }
       }
     ]
   },
@@ -132,15 +132,55 @@ export const constantRouterMap = [
     path: '/users',
     component: Layout,
     redirect: '/users/index',
-    meta: {title: '用户管理', icon: 'peoples', noCache: true},
+    meta: { title: '用户管理', icon: 'peoples', noCache: true },
     children: [
       {
         path: 'index',
         component: () => import('@/views/users/index'),
         props: true,
         name: 'users',
-        meta: {title: '用户管理', icon: 'peoples', noCache: true}
+        meta: { title: '用户管理', icon: 'peoples', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/acl',
+    component: Layout,
+    redirect: '/acl/accounts',
+    meta: { title: '系统权限管理', icon: 'tree', noCache: true },
+    children: [
+      {
+        path: 'accounts',
+        component: () => import('@/views/acl/accounts'),
+        name: 'accounts',
+        meta: { title: '后台账户管理', noCache: true }
       },
+      {
+        path: 'roles',
+        component: () => import('@/views/acl/roles'),
+        name: 'roles',
+        meta: { title: '角色列表', noCache: true }
+      },
+      {
+        path: 'permissions',
+        component: () => import('@/views/acl/permissions'),
+        name: 'permissions',
+        meta: { title: '权限列表', noCache: true }
+      },
+      {
+        path: 'set_roles/:accountId',
+        component: () => import('@/views/acl/set_roles'),
+        props: true,
+        name: 'set_roles',
+        meta: { title: '设置角色', noCache: true }
+      },
+      {
+        path: 'set_permissions/:roleId',
+        component: () => import('@/views/acl/set_permissions'),
+        props: true,
+        name: 'set_permissions',
+        meta: { title: '设置权限', noCache: true }
+      }
     ]
   }
 ]
