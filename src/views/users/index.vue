@@ -28,7 +28,7 @@
       <el-table-column align="center" label="HeadImg">
         <template slot-scope="scope">
           <!--<span>{{ scope.row.head_img.String }}</span>-->
-          <img :src="scope.row.head_img.String" />
+          <img :src="scope.row.head_img.String" style="max-height: 80px;"/>
         </template>
       </el-table-column>
 
@@ -258,7 +258,7 @@
           });
         });
       },
-      async handleSendWEC(userId, asset){
+      async handleSendWEC(row){
         let w = await this.getUserWallet(row.id)
         console.log('getUserWallet:', w)
         this.$prompt('请输入要发送的WEC金额', '提示', {
@@ -267,7 +267,7 @@
           inputPattern: /\d+/,
           inputErrorMessage: 'WEC金额格式不正确'
         }).then(async ({ value }) => {
-          alert(value)
+          //alert(value)
          let resp = await Stellar.payNative(
             process.env.MAIN_ADDRESS,
             process.env.MAIN_SEED,

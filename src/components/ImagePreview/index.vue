@@ -18,6 +18,11 @@
       mounted (){
         this.imgSrc = this.imgData
       },
+      watch:{
+        imgData() {
+          this.imgSrc = this.imgData
+        }
+      },
       methods: {
         selectFile(){
           this.$refs.imgFile.click()

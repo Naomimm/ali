@@ -137,12 +137,33 @@ export const constantRouterMap = [
       {
         path: 'index',
         component: () => import('@/views/users/index'),
-        props: true,
         name: 'users',
         meta: {title: '用户管理', icon: 'peoples', noCache: true}
       },
     ]
-  }
+  },
+  {
+    path: '/news',
+    component: Layout,
+    redirect: '/news/index',
+    meta: {title: '资讯管理', icon: 'documentation', noCache: true},
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/news/index'),
+        name: 'news',
+        meta: {title: '资讯管理', icon: 'documentation', noCache: true}
+      },
+      {
+        path: 'detail/:id',
+        component: () => import('@/views/news/detail'),
+        props: true,
+        hidden: true,
+        name: 'news-detail',
+        meta: {title: '资讯管理', icon: 'documentation', noCache: true}
+      },
+    ]
+  },
 ]
 
 export default new Router({
