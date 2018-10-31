@@ -37,6 +37,13 @@ export function deleteAccount(id, data) {
     method: 'delete'
   })
 }
+export function AccountLogin(data) {
+  return request({
+    url: '/admin/account/login',
+    method: 'post',
+    params: data
+  })
+}
 
 export function getAccountRoles(id) {
   return request({
