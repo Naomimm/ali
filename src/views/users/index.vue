@@ -79,6 +79,9 @@
     </div>
 
     <el-dialog title="用户资产" :visible.sync="dialogAssetsVisible">
+      <p>
+        <b>{{userWallet.address}}</b>
+      </p>
       <el-table v-loading="listLoading" :data="userAssets" border fit highlight-current-row style="width: 100%">
         <el-table-column align="center" label="Asset Code" width="80">
           <template slot-scope="scope">
@@ -129,7 +132,7 @@
         },
         dialogAssetsVisible: false,
         userAssets: [],
-        userWallet: null,
+        userWallet: {address: ''},
       }
     },
     mounted: function () {
@@ -201,6 +204,7 @@
       async getUserWallet(userId){
         let resp = await getUserWallet(userId)
         if (resp.data.code == 200 && resp.data.data.total > 0) {
+          this.userWallet.address = resp.data.data.items[0].address
           return resp.data.data.items[0]
         }else{
           return null

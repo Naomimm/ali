@@ -40,7 +40,7 @@
       <el-table-column width="200" align="center" label="logo" >
         <template slot-scope="scope">
           <!--<span>{{ scope.row.logo.String }}</span>-->
-          <img :src="scope.row.logo.String" />
+          <img :src="scope.row.logo.String" style="max-height: 80px"/>
         </template>
       </el-table-column>
 
@@ -66,6 +66,7 @@
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.row)">{{ $t('table.delete') }}</el-button>
+          <el-button size="mini" type="warn" @click="handleDistribute(scope.row)">分发</el-button>
           <el-button size="mini" type="default" @click="handleDetail(scope.row)">详情</el-button>
         </template>
       </el-table-column>
@@ -110,7 +111,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
+        <el-button @click="doing = dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
         <el-button v-loading="doing" type="primary" @click="dialogStatus==='create'?createData():updateData()">{{ $t('table.confirm') }}</el-button>
       </div>
     </el-dialog>
@@ -129,6 +130,26 @@
       </table>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogDetail = false">{{ $t('table.cancel') }}</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="分发资产" :visible.sync="dialogDistribute">
+      <table border="0" cellpadding="0" cellspacing="0" class="detail">
+        <tbody>
+          <tr><td class="title">资产代码:</td><td>{{detail.code}}</td> <td class="title">发行总量:</td><td>{{detail.amount}}</td></tr>
+          <tr><td class="title">Issuer address:</td><td colspan="3">{{detail.issuer_address}}</td>  </tr>
+          <tr><td class="title">Issuer seed:</td><td colspan="3">{{detail.issuer_seed}}</td>  </tr>
+          <tr><td class="title">Issuer mnemonic:</td><td colspan="3">{{detail.issuer_mnemonic}}</td>  </tr>
+          <tr><td class="title">distributor address:</td><td colspan="3">{{detail.distributor_address}}</td>  </tr>
+          <tr><td class="title">distributor seed:</td><td colspan="3">{{detail.distributor_seed}}</td>  </tr>
+          <tr><td class="title">distributor mnemonic:</td><td colspan="3">{{detail.distributor_mnemonic}}</td>  </tr>
+          <tr><td class="title">分发地址：</td><td colspan="3"> <el-input v-model="distributor_address"/> </td></tr>
+          <tr><td class="title">分发数量：</td><td colspan="3"> <el-input v-model.number="distributor_amount"/> </td></tr>
+        </tbody>
+      </table>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="doing = dialogDistribute = false">{{ $t('table.cancel') }}</el-button>
+        <el-button v-loading="doing" type="primary" @click="distribute">确认分发</el-button>
       </div>
     </el-dialog>
   </div>
@@ -200,6 +221,9 @@
             distributor_seed: '',
             distributor_mnemonic: '',
           },
+          dialogDistribute: false,
+          distributor_address: '',
+          distributor_amount: 0,
         }
       },
       mounted: function () {
@@ -229,6 +253,27 @@
             }
             this.listLoading = false;
           })
+        },
+        async getIssuerAccounts(row){
+          let resp = await getIssuerAccountList({asset_id: row.id, limit: 10, page: 1})
+          if (resp.data.code == 200) {
+            let accounts = resp.data.data.items
+            console.log(accounts)
+            if(accounts == null) return
+            for (let i = 0; i < accounts.length; i++) {
+              let acc = accounts[i]
+              if(acc.role == 'issuer'){
+                this.detail.issuer_address = acc.address
+                this.detail.issuer_seed = acc.seed
+                this.detail.issuer_mnemonic = acc.mnemonic
+              }
+              if (acc.role == 'distributor'){
+                this.detail.distributor_address = acc.address
+                this.detail.distributor_seed = acc.seed
+                this.detail.distributor_mnemonic = acc.mnemonic
+              }
+            }
+          }
         },
         handleSizeChange(val) {
           this.listQuery.limit = val
@@ -406,29 +451,35 @@
             this.list.splice(index, 1)
           })
         },
-        async handleDetail(row){
+        handleDetail(row){
           this.dialogDetail = true
           this.detail.code = row.code
           this.detail.amount = row.amount
-          let resp = await getIssuerAccountList({asset_id: row.id, limit: 10, page: 1})
-          if (resp.data.code == 200) {
-            let accounts = resp.data.data.items
-            console.log(accounts)
-            if(accounts == null) return
-            for (let i = 0; i < accounts.length; i++) {
-              let acc = accounts[i]
-              if(acc.role == 'issuer'){
-                this.detail.issuer_address = acc.address
-                this.detail.issuer_seed = acc.seed
-                this.detail.issuer_mnemonic = acc.mnemonic
-              }
-              if (acc.role == 'distributor'){
-                this.detail.distributor_address = acc.address
-                this.detail.distributor_seed = acc.seed
-                this.detail.distributor_mnemonic = acc.mnemonic
-              }
-            }
-          }
+          this.getIssuerAccounts(row)
+        },
+        handleDistribute(row){
+          this.dialogDistribute = true;
+          this.detail.code = row.code
+          this.getIssuerAccounts(row)
+        },
+        async distribute(){
+          this.doing = true
+          let resp = await Stellar.pay(
+            this.detail.issuer_address,
+            this.detail.issuer_seed,
+            this.distributor_address,
+            this.detail.code,
+            this.detail.issuer_address,
+            this.distributor_amount+'')
+          console.log(resp)
+          this.$notify({
+            title: '分发资产',
+            message: '分发资产成功',
+            type: 'success',
+            duration: 2000
+          })
+
+          this.doing = false
         }
       }
     }
@@ -436,6 +487,7 @@
 
 <style scoped>
   .detail {
+    width: 100%;
     border-top: 1px solid #ccc;
     border-left: 1px solid #ccc;
   }
