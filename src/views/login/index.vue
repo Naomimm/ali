@@ -66,7 +66,7 @@
 import { isvalidUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './socialsignin'
-import { AccountLogin } from '@/api/accounts'
+//import { AccountLogin } from '@/api/accounts'
 
 export default {
   name: 'Login',
@@ -128,19 +128,20 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          AccountLogin(this.loginForm).then(res => {
-            if (res.data.code == 200) {
-              this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
-                this.$router.push({ path: this.redirect || '/' })
-              }).catch(() => {
-                this.loading = false
-              })
-            } else {
+          this.$store.dispatch('AccountLogin', this.loginForm).then(res => {
+            this.loading = false;
+            let data = res.data;
+
+            if(data.code == 200){
+              this.$router.push({ path: this.redirect || '/' });
+            }else{
               this.$message({
                 type: 'error',
                 message: '用户名或者密码不正确，请重新确认'
               })
             }
+          }).catch(error => {
+            console.log(error)
             this.loading = false
           })
         } else {

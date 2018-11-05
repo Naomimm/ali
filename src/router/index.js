@@ -30,6 +30,7 @@ import nestedRouter from './modules/nested'
     noCache: true                if true ,the page will no be cached(default is false)
   }
 **/
+//不受权限控制的路由
 export const constantRouterMap = [
   {
     path: '/redirect',
@@ -75,32 +76,60 @@ export const constantRouterMap = [
       }
     ]
   },
+
+  // module 功能模块
   {
-    path: '/documentation',
+    path: '/acl',
     component: Layout,
-    redirect: '/documentation/index',
+    redirect: '/acl/accounts',
+    meta: { title: '系统权限管理', icon: 'tree', noCache: true },
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/documentation/index'),
-        name: 'Documentation',
-        meta: { title: 'documentation', icon: 'documentation', noCache: true }
+        path: 'accounts',
+        component: () => import('@/views/acl/accounts'),
+        name: 'accounts',
+        meta: { title: '后台账户管理', noCache: true }
+      },
+      {
+        path: 'roles',
+        component: () => import('@/views/acl/roles'),
+        name: 'roles',
+        meta: { title: '角色列表', noCache: true }
+      },
+      {
+        path: 'permissions',
+        component: () => import('@/views/acl/permissions'),
+        name: 'permissions',
+        meta: { title: '权限列表', noCache: true }
+      },
+      {
+        path: 'set_roles/:accountId',
+        component: () => import('@/views/acl/set_roles'),
+        props: true,
+        hidden: true,
+        name: 'set_roles',
+        meta: { title: '设置角色', noCache: true }
+      },
+      {
+        path: 'set_permissions/:roleId',
+        component: () => import('@/views/acl/set_permissions'),
+        props: true,
+        hidden: true,
+        name: 'set_permissions',
+        meta: { title: '设置权限', noCache: true }
       }
     ]
   },
-  {
-    path: '/guide',
-    component: Layout,
-    redirect: '/guide/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/guide/index'),
-        name: 'Guide',
-        meta: { title: 'guide', icon: 'guide', noCache: true }
-      }
-    ]
-  },
+]
+
+export default new Router({
+  // mode: 'history', // require service support
+  scrollBehavior: () => ({ y: 0 }),
+  routes: constantRouterMap
+})
+
+//权限控制的路由
+export const asyncRouterMap = [
   {
     path: '/assets',
     component: Layout,
@@ -144,46 +173,6 @@ export const constantRouterMap = [
     ]
   },
   {
-    path: '/acl',
-    component: Layout,
-    redirect: '/acl/accounts',
-    meta: { title: '系统权限管理', icon: 'tree', noCache: true },
-    children: [
-      {
-        path: 'accounts',
-        component: () => import('@/views/acl/accounts'),
-        name: 'accounts',
-        meta: { title: '后台账户管理', noCache: true }
-      },
-      {
-        path: 'roles',
-        component: () => import('@/views/acl/roles'),
-        name: 'roles',
-        meta: { title: '角色列表', noCache: true }
-      },
-      {
-        path: 'permissions',
-        component: () => import('@/views/acl/permissions'),
-        name: 'permissions',
-        meta: { title: '权限列表', noCache: true }
-      },
-      {
-        path: 'set_roles/:accountId',
-        component: () => import('@/views/acl/set_roles'),
-        props: true,
-        name: 'set_roles',
-        meta: { title: '设置角色', noCache: true }
-      },
-      {
-        path: 'set_permissions/:roleId',
-        component: () => import('@/views/acl/set_permissions'),
-        props: true,
-        name: 'set_permissions',
-        meta: { title: '设置权限', noCache: true }
-      }
-    ]
-  },
-  {
     path: '/news',
     component: Layout,
     redirect: '/news/index',
@@ -205,15 +194,37 @@ export const constantRouterMap = [
       },
     ]
   },
+  { path: '*', redirect: '/404', hidden: true }
 ]
 
-export default new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRouterMap
-})
-
-export const asyncRouterMap = [
+//模板自带的路由
+export const templateRouterMap = [
+  {
+    path: '/documentation',
+    component: Layout,
+    redirect: '/documentation/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/documentation/index'),
+        name: 'Documentation',
+        meta: { title: 'documentation', icon: 'documentation', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/guide',
+    component: Layout,
+    redirect: '/guide/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/guide/index'),
+        name: 'Guide',
+        meta: { title: 'guide', icon: 'guide', noCache: true }
+      }
+    ]
+  },
   {
     path: '/permission',
     component: Layout,
@@ -447,6 +458,4 @@ export const asyncRouterMap = [
       }
     ]
   },
-
-  { path: '*', redirect: '/404', hidden: true }
 ]

@@ -51,10 +51,18 @@ export function getAccountRoles(id) {
     method: 'get'
   })
 }
+
 export function setAccountRoles(data) {
   return request({
     url: '/admin/account/set-roles',
     method: 'post',
     params: data
+  })
+}
+
+export function getPermissions(id) {
+  return request({
+    url: '/admin/account/get-permissions/' + id,
+    method: 'get'
   })
 }

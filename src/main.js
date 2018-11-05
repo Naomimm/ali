@@ -16,7 +16,8 @@ import store from './store'
 import i18n from './lang' // Internationalization
 import './icons' // icon
 import './errorLog' // error log
-import './permission' // permission control
+// import './permission' // permission control
+import './acl' // 权限控制模块 以permission修改
 import './mock' // simulation data
 
 import * as filters from './filters' // global filters
