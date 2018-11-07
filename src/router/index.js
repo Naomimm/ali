@@ -30,7 +30,7 @@ import nestedRouter from './modules/nested'
     noCache: true                if true ,the page will no be cached(default is false)
   }
 **/
-//不受权限控制的路由
+// 不受权限控制的路由
 export const constantRouterMap = [
   {
     path: '/redirect',
@@ -119,7 +119,7 @@ export const constantRouterMap = [
         meta: { title: '设置权限', noCache: true }
       }
     ]
-  },
+  }
 ]
 
 export default new Router({
@@ -128,32 +128,32 @@ export default new Router({
   routes: constantRouterMap
 })
 
-//权限控制的路由
+// 权限控制的路由
 export const asyncRouterMap = [
   {
     path: '/assets',
     component: Layout,
     redirect: '/assets/issuers',
-    meta: {title: '资产发行管理', icon: 'component', noCache: true},
+    meta: { title: '资产发行管理', icon: 'component', noCache: true },
     children: [
       {
         path: 'index/:issuerId',
         component: () => import('@/views/assets/assets'),
         props: true,
         name: 'assets',
-        meta: {title: '资产管理', icon: 'money', noCache: true}
+        meta: { title: '资产管理', icon: 'money', noCache: true }
       },
       {
         path: 'issuers',
         component: () => import('@/views/assets/issuers'),
         name: 'issuers',
-        meta: {title: '发行人管理', icon: 'peoples', noCache: true}
+        meta: { title: '发行人管理', icon: 'peoples', noCache: true }
       },
       {
         path: 'issuer-accounts',
         component: () => import('@/views/assets/issuer_accounts'),
         name: 'issuer-accounts',
-        meta: {title: '发行人账户管理', icon: 'tree', noCache: true}
+        meta: { title: '发行人账户管理', icon: 'tree', noCache: true }
       }
     ]
   },
@@ -161,7 +161,7 @@ export const asyncRouterMap = [
     path: '/users',
     component: Layout,
     redirect: '/users/index',
-    meta: {title: '用户管理', icon: 'peoples', noCache: true},
+    meta: { title: '用户管理', icon: 'peoples', noCache: true },
     children: [
       {
         path: 'index',
@@ -176,13 +176,13 @@ export const asyncRouterMap = [
     path: '/news',
     component: Layout,
     redirect: '/news/index',
-    meta: {title: '资讯管理', icon: 'documentation', noCache: true},
+    meta: { title: '资讯管理', icon: 'documentation', noCache: true },
     children: [
       {
         path: 'index',
         component: () => import('@/views/news/index'),
         name: 'news',
-        meta: {title: '资讯管理', icon: 'documentation', noCache: true}
+        meta: { title: '行业资讯', icon: 'documentation', noCache: true }
       },
       {
         path: 'detail/:id',
@@ -190,14 +190,14 @@ export const asyncRouterMap = [
         props: true,
         hidden: true,
         name: 'news-detail',
-        meta: {title: '资讯管理', icon: 'documentation', noCache: true}
-      },
+        meta: { title: '行业资讯', icon: 'documentation', noCache: true }
+      }
     ]
   },
   { path: '*', redirect: '/404', hidden: true }
 ]
 
-//模板自带的路由
+// 模板自带的路由
 export const templateRouterMap = [
   {
     path: '/documentation',
@@ -457,5 +457,5 @@ export const templateRouterMap = [
         meta: { title: 'externalLink', icon: 'link' }
       }
     ]
-  },
+  }
 ]

@@ -1,46 +1,45 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input :placeholder="$t('table.title')" v-model="listQuery.title" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
+      <nav-button/>
     </div>
 
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" width="80">
+      <el-table-column align="center" label="序号" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Title">
-        <template slot-scope="scope">
-          <span>{{ scope.row.title }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="Author" >
+      <el-table-column align="center" label="作者">
         <template slot-scope="scope">
           <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="Read Times" >
+      <el-table-column label="标题" align="center" width="400">
+        <template slot-scope="scope">
+          <span>{{ scope.row.title }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column class-name="status-col" label="阅读量" >
         <template slot-scope="scope">
           <span>{{ scope.row.read_times }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="180px" align="center" label="Created">
+      <el-table-column width="180px" align="center" label="时间">
         <template slot-scope="scope">
           <span>{{ scope.row.created | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">{{ $t('table.delete') }}</el-button>
+          <el-button class="operation" size="mini" @click="handleUpdate(scope.row)">推荐</el-button>
+          <el-button class="operation" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
+          <el-button class="operation" size="mini" @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -56,120 +55,126 @@
         @current-change="handleCurrentChange"/>
     </div>
 
-
   </div>
 </template>
 
 <script>
-  import { getNewsList, createNews, updateNews, deleteNews } from '@/api/news'
-  import waves from '@/directive/waves' // 水波纹指令
-  import { parseTime } from '@/utils'
+import { getNewsList, createNews, updateNews, deleteNews } from '@/api/news'
+import navButton from '@/components/Common/navButton'
+import waves from '@/directive/waves' // 水波纹指令
+import { parseTime } from '@/utils'
 
-  export default {
-    name: "News",
-    directives: {
-      waves
-    },
-    data: function () {
-      return {
-        list: null,
-        total: 0,
-        listLoading: true,
-        listQuery: {
-          page: 1,
-          limit: 20
-        },
-        temp: {
-          id: 0,
-          title: '',
-          author: '',
-        },
-        dialogFormVisible: false,
-        dialogStatus: '',
-        textMap: {
-          update: 'Edit',
-          create: 'Create'
-        },
-        rules: {
-          title: [{ required: true, message: 'name is required', trigger: 'change' }],
-          author: [{ required: true, message: 'company is required', trigger: 'blur' }]
-        },
-      }
-    },
-    mounted: function () {
-      this.getList()
-    },
-    methods: {
-      getList() {
-        this.listLoading = true;
-        getNewsList({limit: this.listQuery.limit, page: this.listQuery.page}).then(res => {
-          console.log(res);
-          let data = res.data;
-          if (data.code == 200) {
-            this.list = data.data.items || []
-            this.total = data.data.total
-          } else {
-            this.$message({
-              message: data.message,
-              type: 'warning'
-            });
-          }
-          this.listLoading = false;
-        })
+export default {
+  name: 'News',
+  directives: {
+    waves
+  },
+  components: {
+    navButton
+  },
+  data: function() {
+    return {
+      list: null,
+      total: 0,
+      listLoading: true,
+      listQuery: {
+        page: 1,
+        limit: 20
       },
-      handleSizeChange(val) {
-        this.listQuery.limit = val
-        this.getList()
+      temp: {
+        id: 0,
+        title: '',
+        author: ''
       },
-      handleCurrentChange(val) {
-        this.listQuery.page = val
-        this.getList()
+      dialogFormVisible: false,
+      dialogStatus: '',
+      textMap: {
+        update: 'Edit',
+        create: 'Create'
       },
-      handleFilter() {
-        this.getList()
-      },
-      resetTemp() {
-        this.temp = {
-          id: undefined,
-          name: '',
-          company: '',
-        }
-      },
-      handleCreate() {
-        this.$router.push("/news/detail/0")
-      },
-      handleUpdate(row) {
-        this.$router.push("/news/detail/" + row.id)
-      },
-      handleDelete(row) {
-        this.$confirm('此操作将永久删除该项, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.deleteData(row)
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
-
-      },
-      deleteData(row){
-        deleteNews(row.id).then( res => {
-          this.$notify({
-            title: '成功',
-            message: '删除成功',
-            type: 'success',
-            duration: 2000
-          })
-          const index = this.list.indexOf(row)
-          this.list.splice(index, 1)
-        })
+      rules: {
+        title: [{ required: true, message: 'name is required', trigger: 'change' }],
+        author: [{ required: true, message: 'company is required', trigger: 'blur' }]
       }
     }
+  },
+  mounted: function() {
+    this.getList()
+  },
+  methods: {
+    getList() {
+      this.listLoading = true
+      getNewsList({ limit: this.listQuery.limit, page: this.listQuery.page }).then(res => {
+        console.log(res)
+        const data = res.data
+        if (data.code == 200) {
+          this.list = data.data.items || []
+          this.total = data.data.total
+        } else {
+          this.$message({
+            message: data.message,
+            type: 'warning'
+          })
+        }
+        this.listLoading = false
+      })
+    },
+    handleSizeChange(val) {
+      this.listQuery.limit = val
+      this.getList()
+    },
+    handleCurrentChange(val) {
+      this.listQuery.page = val
+      this.getList()
+    },
+    handleFilter() {
+      this.getList()
+    },
+    resetTemp() {
+      this.temp = {
+        id: undefined,
+        name: '',
+        company: ''
+      }
+    },
+    handleCreate() {
+      this.$router.push('/news/detail/0')
+    },
+    handleUpdate(row) {
+      this.$router.push('/news/detail/' + row.id)
+    },
+    handleDelete(row) {
+      this.$confirm('此操作将永久删除该项, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.deleteData(row)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    deleteData(row) {
+      deleteNews(row.id).then(res => {
+        this.$notify({
+          title: '成功',
+          message: '删除成功',
+          type: 'success',
+          duration: 2000
+        })
+        const index = this.list.indexOf(row)
+        this.list.splice(index, 1)
+      })
+    },
+    // 导出文件
+    downloadFilter() {
+
+    }
   }
+}
 </script>
 
 <style scoped>
