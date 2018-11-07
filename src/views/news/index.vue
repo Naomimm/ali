@@ -3,7 +3,6 @@
     <div class="filter-container">
       <nav-button/>
     </div>
-
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="序号" width="80">
         <template slot-scope="scope">
