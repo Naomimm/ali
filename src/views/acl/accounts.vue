@@ -42,6 +42,7 @@
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.row)">{{ $t('table.delete') }}</el-button>
           <el-button type="primary" size="mini" @click="setRole(scope.row)" >设置角色</el-button>
+          <el-button :type="scope.row.status == 1 ? 'danger' : 'primary'" size="mini" @click="changeStatus(scope.row)" >{{ scope.row.status == 1 ? '禁用':'启用' }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -246,6 +247,25 @@ export default {
     },
     setRole(row) {
       this.$router.push('/acl/set_roles/' + row.id)
+    },
+    changeStatus(row) {
+      row.status = row.status == 1 ? 2 : 1
+      updateAccount(row.id, row).then(() => {
+        for (const v of this.list) {
+          if (v.id === row.id) {
+            const index = this.list.indexOf(v)
+            this.list.splice(index, 1, row)
+            break
+          }
+        }
+        this.dialogFormVisible = false
+        this.$notify({
+          title: '成功',
+          message: (row.status == 1 ? '启用' : '禁用') + '成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
     }
   }
 }
