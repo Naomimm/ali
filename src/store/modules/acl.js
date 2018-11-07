@@ -1,6 +1,6 @@
-import {AccountLogin, getAccountRoles,getPermissions} from '@/api/accounts'
-import {getRolePermissions} from '@/api/roles'
-import {getToken, setToken, removeToken} from '@/utils/auth'
+import { AccountLogin, getAccountRoles, getPermissions } from '@/api/accounts'
+import { getRolePermissions } from '@/api/roles'
+import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const acl = {
   state: {
@@ -11,7 +11,7 @@ const acl = {
     // name: '',
     avatar: '',
     introduction: '',
-    roles: [],
+    roles: []
   },
 
   mutations: {
@@ -28,37 +28,37 @@ const acl = {
       state.full_name = full_name
     },
     SET_ROLES: (state, roles) => {
-      state.roles = roles;
+      state.roles = roles
     },
     SET_PERMISSIONS: (state, permissions) => {
       // state.permissions = state.permissions.concat(state.permissions, permissions)
-      state.permissions = permissions;
+      state.permissions = permissions
     },
     LOGOUT: (state) => {
-      state.account_id = '';
-      state.username = '';
-      state.token = '';
-      state.full_name = '';
-      state.roles = '';
-      state.permissions = '';
-    },
+      state.account_id = ''
+      state.username = ''
+      state.token = ''
+      state.full_name = ''
+      state.roles = ''
+      state.permissions = ''
+    }
   },
 
   actions: {
-    AccountLogin({commit}, userInfo) {
+    AccountLogin({ commit }, userInfo) {
       const username = userInfo.username.trim()
 
       return new Promise((resolve, reject) => {
-        AccountLogin(username, userInfo.password).then(response => {
-          const data = response.data;
+        AccountLogin({ username: username, password: userInfo.password }).then(response => {
+          const data = response.data
           if (data.code == 200) {
-            userInfo = data.data;
+            userInfo = data.data
             commit('SET_ACCOUNT_ID', userInfo.id)
             commit('SET_USERNAME', userInfo.account_name)
             commit('SET_FULL_NAME', userInfo.full_name)
             // commit('SET_PERMISSIONS', userInfo.permissions)
             commit('SET_TOKEN', 123)
-            setToken(123);
+            setToken(123)
             // this.$store.dispatch('GetPermissions');
             resolve(response)
           }
@@ -67,21 +67,19 @@ const acl = {
         })
       })
     },
-    GetPermissions({commit, state}) {
+    GetPermissions({ commit, state }) {
       return new Promise((resolve, reject) => {
-        if (state.account_id == '')
-          reject('请先登录');
+        if (state.account_id == '') { reject('请先登录') }
 
         getPermissions(state.account_id).then(response => {
-          if (response.data.code !== 200)
-            reject('获取用户权限接口异常');
+          if (response.data.code !== 200) { reject('获取用户权限接口异常') }
 
-          let data = response.data.data;
-          let ps = [];
+          const data = response.data.data
+          const ps = []
           data.forEach(v => {
             ps.push(v.code)
-          });
-          commit('SET_PERMISSIONS', ps);
+          })
+          commit('SET_PERMISSIONS', ps)
           resolve(response)
         }).catch(error => {
           reject(error)
@@ -90,13 +88,13 @@ const acl = {
     },
 
     // 登出
-    LogOut({commit, state}) {
+    LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
-        commit('LOGOUT');
-        removeToken();
-        resolve();
+        commit('LOGOUT')
+        removeToken()
+        resolve()
       })
-    },
+    }
 
   }
 }
