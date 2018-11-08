@@ -461,17 +461,29 @@
         handleDistribute(row){
           this.dialogDistribute = true;
           this.detail.code = row.code
-          this.getIssuerAccounts(row)
+          if(row.code != process.env.NATIVE_ASSET_CODE) {
+            this.getIssuerAccounts(row)
+          }
         },
         async distribute(){
           this.doing = true
-          let resp = await Stellar.pay(
-            this.detail.issuer_address,
-            this.detail.issuer_seed,
-            this.distributor_address,
-            this.detail.code,
-            this.detail.issuer_address,
-            this.distributor_amount+'')
+          let resp = null
+          if(this.detail.code == process.env.NATIVE_ASSET_CODE) {
+            resp = await Stellar.payNative(
+              process.env.MAIN_ADDRESS,
+              process.env.MAIN_SEED,
+              this.distributor_address,
+              this.distributor_amount + ''
+            )
+          } else {
+            resp = await Stellar.pay(
+              this.detail.issuer_address,
+              this.detail.issuer_seed,
+              this.distributor_address,
+              this.detail.code,
+              this.detail.issuer_address,
+              this.distributor_amount + '')
+          }
           console.log(resp)
           this.$notify({
             title: '分发资产',
