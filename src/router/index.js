@@ -117,6 +117,13 @@ export const constantRouterMap = [
         hidden: true,
         name: 'set_permissions',
         meta: { title: '设置权限', noCache: true }
+      },
+      {
+        path: 'change_pwd',
+        component: () => import('@/views/acl/change_pwd'),
+        hidden: true,
+        name: 'change_pwd',
+        meta: { title: '修改密码', noCache: true }
       }
     ]
   }

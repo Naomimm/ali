@@ -66,3 +66,11 @@ export function getPermissions(id) {
     method: 'get'
   })
 }
+
+export function changePwd(data) {
+  return request({
+    url: '/admin/account/change-pwd',
+    method: 'post',
+    params: data
+  })
+}
