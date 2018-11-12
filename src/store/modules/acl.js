@@ -57,8 +57,8 @@ const acl = {
             commit('SET_USERNAME', userInfo.account_name)
             commit('SET_FULL_NAME', userInfo.full_name)
             // commit('SET_PERMISSIONS', userInfo.permissions)
-            commit('SET_TOKEN', 123)
-            setToken(123)
+            commit('SET_TOKEN', userInfo)
+            setToken(userInfo)
             // this.$store.dispatch('GetPermissions');
             resolve(response)
           }
@@ -69,9 +69,8 @@ const acl = {
     },
     GetPermissions({ commit, state }) {
       return new Promise((resolve, reject) => {
-        if (state.account_id == '') { reject('请先登录') }
-
-        getPermissions(state.account_id).then(response => {
+        let user = JSON.parse(getToken());
+        getPermissions(user.id).then(response => {
           if (response.data.code !== 200) { reject('获取用户权限接口异常') }
 
           const data = response.data.data
